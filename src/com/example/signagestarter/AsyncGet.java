@@ -1,20 +1,38 @@
 package com.example.signagestarter;
 
 import android.os.AsyncTask;
+import android.util.Log;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import java.lang.Exception;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 
 public class AsyncGet extends AsyncTask<String, Integer, String> {
 
     private AsyncCallback _asyncCallback = null;;
+    String[] _textArray;
 
-    public AsyncGet(AsyncCallback asyncCallback) {
+    public AsyncGet(AsyncCallback asyncCallback, String[] textArray) {
         this._asyncCallback = asyncCallback;
+        this._textArray = textArray;
     }
 
     protected String doInBackground(String... urls) {
@@ -25,6 +43,9 @@ public class AsyncGet extends AsyncTask<String, Integer, String> {
             if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 httpResponse.getEntity().writeTo(outputStream);
+                
+                XMLPerse(outputStream);
+                
                 return outputStream.toString();
             }
         } catch (Exception e) {
@@ -33,7 +54,56 @@ public class AsyncGet extends AsyncTask<String, Integer, String> {
         return null;
     }
 
-    protected void onPreExecute() {
+    private void XMLPerse(ByteArrayOutputStream outputStream) {
+		// TODO Auto-generated method stub
+    	
+    	//XMLパーサーを生成する
+    	XmlPullParserFactory factory;
+    	try {
+			factory = XmlPullParserFactory.newInstance();
+		
+	    	final XmlPullParser parser = factory.newPullParser();
+	    	//XMLパーサに解析したい内容を設定する
+	    	parser.setInput(new StringReader(outputStream.toString()));
+	
+	    	//XML文章の終わりまでループして解析する
+	    	for(int eventType = parser.getEventType();eventType != XmlPullParser.END_DOCUMENT; eventType = parser.next()){
+	    		String tagName;
+	    		String tagText;
+	
+	    		switch(eventType){
+	    		//TAGの始まり
+	    		case XmlPullParser.START_TAG:
+	    			//TAGの名前を取得する
+	    			tagName = parser.getName();
+	
+	    			//TAGの名前がｔｉｔｌｅ
+	    			if(tagName.equals("title")){
+	    				//次の要素へ進む
+	    				parser.next();
+	
+	    				//要素がTEXTだったら内容を取り出す
+	    				if(parser.getEventType() == XmlPullParser.TEXT){
+	    					tagText = parser.getText();
+	    					Log.v("とれた", tagText);
+	    				}
+	    			}
+	    		}
+	    	}
+    	} catch (XmlPullParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	
+    	
+    	
+	}
+
+	protected void onPreExecute() {
         super.onPreExecute();
         this._asyncCallback.onPreExecute();
     }

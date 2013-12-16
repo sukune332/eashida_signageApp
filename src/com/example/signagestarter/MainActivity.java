@@ -8,11 +8,14 @@ import java.net.HttpURLConnection;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.Menu;
 
 public class MainActivity extends Activity {
 
+	String[] textArray = new String[10];
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,8 +35,11 @@ public class MainActivity extends Activity {
             public void onCancelled() {
                 // do something
             }
-        });
-        asyncGet.execute("http://www.yahoo.co.jp/");
+        },
+        textArray
+        );
+        asyncGet.execute("http://rss.dailynews.yahoo.co.jp/fc/rss.xml");
+        
 		
 	}
 
