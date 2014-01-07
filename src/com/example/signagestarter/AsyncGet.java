@@ -16,6 +16,11 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.lang.Exception;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +32,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 public class AsyncGet extends AsyncTask<String, Integer, String> {
 
+	private static final String url = "jdbc:mysql://192.168.0.243/answerbook";
+    private static final String user = "ashida";
+    private static final String pass = "ssas04u4";
     private AsyncCallback _asyncCallback = null;;
     String[] _textArray;
 
@@ -36,6 +44,9 @@ public class AsyncGet extends AsyncTask<String, Integer, String> {
     }
 
     protected String doInBackground(String... urls) {
+    	
+    	testDB();
+    	/*
         HttpClient httpClient = new DefaultHttpClient();
         HttpGet httpGet = new HttpGet(urls[0]);
         try {
@@ -50,7 +61,8 @@ public class AsyncGet extends AsyncTask<String, Integer, String> {
             }
         } catch (Exception e) {
             return null;
-        }
+        }a
+        */
         return null;
     }
 
@@ -123,4 +135,36 @@ public class AsyncGet extends AsyncTask<String, Integer, String> {
         this._asyncCallback.onCancelled();
     }
 
+    public void testDB() {
+    	//TextView tv = (TextView)this.findViewById(R.id.text_view);
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection(url, user, pass);
+            /* System.out.println("Database connection success"); */
+ 
+            String result = "Database connection success\n";
+            Statement st = (Statement) con.createStatement();
+            //ResultSet rs = (ResultSet) st.executeQuery("DESC answer");
+            ResultSet rs = (ResultSet) st.executeQuery("select * from answer");
+            ResultSetMetaData rsmd = (ResultSetMetaData) rs.getMetaData();
+ 
+            while(rs.next()) {
+            	// SELECTå¸ÇØ
+            	result += rsmd.getColumnName(1) + ": " + rs.getInt(1) + "\n";
+            	result += rsmd.getColumnName(2) + ": " + rs.getString(2) + "\n";
+            	result += rsmd.getColumnName(3) + ": " + rs.getString(3) + "\n";
+            	// DESC answerå¸ÇØ
+            	//result += rsmd.getColumnName(1) + ": " + rs.getString(1) + "\n";
+            	//result += rsmd.getColumnName(2) + ": " + rs.getString(2) + "\n";
+            	//result += rsmd.getColumnName(3) + ": " + rs.getString(3) + "\n";
+            }
+            Log.v("Ç≈Å[ÇΩÇ◊Å[Ç∑", result);
+            //tv.setText(result);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            //tv.setText(e.toString());
+        }   
+ 
+    }
 }

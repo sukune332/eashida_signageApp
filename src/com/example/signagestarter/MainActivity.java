@@ -1,25 +1,22 @@
 package com.example.signagestarter;
 
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.net.HttpURLConnection;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.Menu;
 
 public class MainActivity extends Activity {
 
+	  
+	 
 	String[] textArray = new String[10];
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
 		
 		AsyncGet asyncGet = new AsyncGet(new AsyncCallback() {
             public void onPreExecute() {
@@ -30,7 +27,7 @@ public class MainActivity extends Activity {
             }
             public void onPostExecute(String result) {
                 // do something
-                Log.d("onPostExecute", result);
+                //Log.d("onPostExecute", result);
             }
             public void onCancelled() {
                 // do something
@@ -50,5 +47,8 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-
+	
+	
+	
+	
 }
